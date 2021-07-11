@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  container:
+    runs-on: ubuntu-latest
+    container:
+      image: ballerina/ballerina:swan-lake-beta1
+      options: --user root
+    steps:
+      - name: Install Git
+        run: apk --no-cache add git
+      - uses: actions/checkout@v2
+      - name: Build with Gradle
+        env:
+          BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_ACCESS_TOKEN }}
+          JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
+        run: |
+          ./gradlew build -P loadCdata=true -P release=true
+      - name: Create Pull Request for Released Cdata Modules
+        id: cpr
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.BALLERINA_BOT_TOKEN }}
+          commit-message: Add or update cdata modules
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          branch: release/file-update
+          base: main
+          title: Add or Update CData Modules
+          body: |
+            Add new cdata modules or update existing cdata modules
+              - cdata.properties
+            Update Ballerina.toml version and release the connectors
+          draft: false
+      - name: PR details
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
