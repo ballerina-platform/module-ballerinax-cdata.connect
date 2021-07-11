@@ -1,0 +1,10 @@
+[package]
+org = "ballerinax"
+name = "cdata.${apiName}"
+version = "${version}"
+license= ["Apache-2.0"]
+authors = ["Ballerina"]
+keywords = ["CData","${apiName}"]
+
+[[platform.java11.dependency]]
+path = "../../libs/cdata.jdbc.${apiName}.jar"

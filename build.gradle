@@ -1,0 +1,219 @@
+
+plugins {
+    id 'java'
+}
+
+group project.group
+version project.version
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {}
+
+// def ballerinaDistributionPath = "/usr/lib/ballerina"
+def ballerinaDistributionPath = System.getenv("BALLERINA_HOME")
+String cdataDriverDirPath = project.projectDir.absolutePath + "/libs"
+String cdataPackageDirPath = project.projectDir.absolutePath + "/cdata"
+
+boolean remote = false
+if (project.hasProperty("remote")){
+    remote = project.property("remote")
+}
+
+boolean release = false
+if (project.hasProperty("release")){
+    release = project.property("release")
+}
+
+boolean loadCdata = false
+if (project.hasProperty("loadCdata")) {
+    loadCdata = project.property("loadCdata")
+}
+
+// Load CData properties
+def props = new Properties()
+file("cdata.properties").withInputStream { props.load(it) }
+
+// Load CData packages
+List<String> cdataPackages = new ArrayList<>()
+def dir = new File(cdataPackageDirPath)
+dir.eachDir {
+    cdataPackages << it.name
+}
+
+// Find new CData packages
+List<String> newCdataPackages = new ArrayList<>()
+task findNewCdataPackages {
+    props.each { key, value ->
+        String apiName = key
+        def cdataModule = new File(cdataPackageDirPath + "/${key}")
+
+        if (!cdataModule.exists()) {
+            newCdataPackages << apiName
+        } else {
+            def properties = new Properties()
+            file(cdataPackageDirPath + "/${apiName}/Ballerina.toml").withInputStream { properties.load(it) }
+            String currentModuleVersion = properties.getProperty("version")
+            if ("\"${value}\"" != currentModuleVersion) {
+                newCdataPackages << apiName
+            }
+        }
+    }
+}
+
+// Find updated CData packages
+List<String> updatedCdataPackages = new ArrayList<>()
+task findUpdatedCdataPackages {
+    cdataPackages.each {
+        def properties = new Properties()
+        file(cdataPackageDirPath + "/${it}/Ballerina.toml").withInputStream { properties.load(it) }
+        String currentModuleVersion = properties.getProperty("version")
+        String previousModuleVersion = props.getProperty(it)
+        String apiName = it
+        if (currentModuleVersion != "\"$previousModuleVersion\"") {
+            updatedCdataPackages << apiName
+        }
+    }
+}
+
+task setUpEnvironment {
+    // Pulling SL Beta1 distribution if not available
+    if (project.hasProperty("remote") ) {
+        if (remote) {
+            exec {
+                commandLine 'sh', '-c', "${ballerinaDistributionPath}/bin/bal dist pull slbeta1"
+            }
+            exec {
+                commandLine 'sh', '-c', "rm -rf ${ballerinaDistributionPath}/bin/../dependencies/jdk-11.0.8+10-jre"
+            }
+        }
+    }
+}
+
+task onetimeConnectorGeneration {
+    if (loadCdata) {
+        // Changing the build distribution to SL Beta1
+        exec {
+            commandLine 'sh', '-c', "${ballerinaDistributionPath}/bin/bal dist use slbeta1"
+        }
+        newCdataPackages.each {
+            String apiName = it
+            // Create a new ballerina project
+            exec {
+                workingDir "${cdataPackageDirPath}"
+                commandLine 'sh', '-c', "${ballerinaDistributionPath}/bin/bal new ${apiName}"
+            }
+            // Add the driver to the Ballerina.toml.
+            exec {
+                workingDir "${cdataPackageDirPath}/${apiName}"
+                commandLine 'sh', '-c', "sed -e 's/\${apiName}/${apiName}/' -e " +
+                        "'s/\${version}/${props.getProperty(apiName)}/' ../../resources/Ballerina.toml > Ballerina.toml"
+            }
+            // Add Package.md with content
+            exec {
+                workingDir "${cdataPackageDirPath}/${apiName}"
+                commandLine 'sh', '-c', "sed -e 's/\${apiName}/${apiName}/' ../../resources/Package.md > Package.md"
+            }
+            // Clear the content in the main.bal
+            exec {
+                workingDir "${cdataPackageDirPath}/${apiName}"
+                commandLine 'sh', '-c', "> main.bal"
+            }
+            // Build the bala file
+            exec {
+                commandLine 'sh', '-c', "${ballerinaDistributionPath}/bin/bal build -c ${cdataPackageDirPath}/${apiName}"
+            }
+        }
+    }
+}
+
+task connectorGeneration {
+    if (!loadCdata) {
+        // Changing the build distribution to SL Beta1
+        exec {
+            commandLine 'sh', '-c', "${ballerinaDistributionPath}/bin/bal dist use slbeta1"
+        }
+        updatedCdataPackages.each {
+            String apiName = it
+            def properties = new Properties()
+            file(cdataPackageDirPath + "/${it}/Ballerina.toml").withInputStream { properties.load(it) }
+            String updatedModuleVersion = properties.getProperty("version").replaceAll("\"", "")
+            // Create a new ballerina project
+            exec {
+                workingDir "${cdataPackageDirPath}"
+                commandLine 'sh', '-c', "${ballerinaDistributionPath}/bin/bal new ${apiName}"
+            }
+            // Add the driver to the Ballerina.toml.
+            exec {
+                workingDir "${cdataPackageDirPath}/${apiName}"
+                commandLine 'sh', '-c', "sed -e 's/\${apiName}/${apiName}/' -e " +
+                        "'s/\${version}/${updatedModuleVersion}/' ../../resources/Ballerina.toml > Ballerina.toml"
+            }
+            // Add Package.md with content
+            exec {
+                workingDir "${cdataPackageDirPath}/${apiName}"
+                commandLine 'sh', '-c', "sed -e 's/\${apiName}/${apiName}/' ../../resources/Package.md > Package.md"
+            }
+            // Clear the content in the main.bal
+            exec {
+                workingDir "${cdataPackageDirPath}/${apiName}"
+                commandLine 'sh', '-c', "> main.bal"
+            }
+        }
+    }
+}
+
+task connectorBuild {
+    // Changing the build distribution to SL Beta1
+    exec {
+        commandLine 'sh', '-c', "${ballerinaDistributionPath}/bin/bal dist use slbeta1"
+    }
+    updatedCdataPackages.each {
+        String apiName = it
+        // Build the bala file
+        exec {
+            commandLine 'sh', '-c', "${ballerinaDistributionPath}/bin/bal build -c ${cdataPackageDirPath}/${apiName}"
+        }
+    }
+}
+
+task connectorRelease {
+    if (release) {
+        if (loadCdata) {
+            newCdataPackages.each {
+                String apiName = it
+                // Push the bala file to the Ballerina central local repository
+                exec {
+                    workingDir "${cdataPackageDirPath}/${apiName}"
+                    commandLine 'sh', '-c', "${ballerinaDistributionPath}/bin/bal push"
+                }
+            }
+        } else {
+            updatedCdataPackages.each {
+                String apiName = it
+                // Push the bala file to the Ballerina central local repository
+                exec {
+                    workingDir "${cdataPackageDirPath}/${apiName}"
+                    commandLine 'sh', '-c', "${ballerinaDistributionPath}/bin/bal push"
+                }
+                def properties = new Properties()
+                file(cdataPackageDirPath + "/${it}/Ballerina.toml").withInputStream { properties.load(it) }
+                String currentModuleVersion = properties.getProperty("version").replaceAll("\"", "")
+                exec {
+                    workingDir project.projectDir.absolutePath
+                    commandLine 'sh', '-c', "sed -i '/${apiName}/ s/=.*\$/=${currentModuleVersion}/' cdata.properties"
+                }
+            }
+
+        }
+    }
+}
+
+connectorRelease.dependsOn connectorBuild
+connectorBuild.dependsOn connectorGeneration
+connectorGeneration.dependsOn onetimeConnectorGeneration
+onetimeConnectorGeneration.dependsOn setUpEnvironment
+setUpEnvironment.dependsOn findUpdatedCdataPackages
+findUpdatedCdataPackages.dependsOn findNewCdataPackages
