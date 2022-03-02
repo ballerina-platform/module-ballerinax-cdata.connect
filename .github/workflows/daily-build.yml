@@ -65,6 +65,6 @@ jobs:
                 --data "{
                   \"event_type\": \"notify-build-failure\",
                   \"client_payload\": {
-                    \"repoName\": \"module-ballerinax-azure-service-bus\"
+                    \"repoName\": \"module-ballerinax-cdata.connect\"
                   }
                 }"

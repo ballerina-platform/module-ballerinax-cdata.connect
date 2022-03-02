@@ -31,7 +31,7 @@ public isolated client class Client {
     # Gets invoked to initialize the `connector`.
     # The connector initialization requires setting the CData Connect `username` and `password`.
     # If you want to connect to CData Connect Cloud, you don't need to specify the `url`. 
-    # The default value will be `jdbc:cdata:connect:AuthScheme=Basic`. It uses Basic AuthSchema by default to connect.
+    # The default value will be `jdbc:cdata:connect:AuthScheme=Basic`.
     # Create a [CData Connect Cloud account](https://cloud.cdata.com) and obtain the CData cloud `username` and `password` 
     # from the CData Cloud dashboard. 
     # `<username>` is the email address of the user. For example `user@cdata.com`. 
@@ -43,8 +43,7 @@ public isolated client class Client {
     # `<password>` is the password you use to login to CData Cloud Connect Server.
     # Make sure to go to the [Connections](https://cloud.cdata.com/docs/Connections.html) tab in the CData Connect Cloud dashboard 
     # or in the CData Connect Server and set up any connection you need to work with the data sources. 
-    # You can use the **Connections** tab to configure a data source that contains the data you want to work with. 
-    # For more information on working with each data source, see [Data Sources](https://cloud.cdata.com/docs/Data-Sources.html).
+    # You can use the **Connections** tab to configure a data source that contains the data you want to work with.
     # Use the **Connection Name** and **Data Source Name** to write your SQL queries.
     # 
     # + user - The user name of the CData Connect user

@@ -61,7 +61,6 @@ ballerina {
     packageOrganization = packageOrg
     module = packageName
     langVersion = ballerinaLangVersion
-    testCoverageParam = '--code-coverage --coverage-format=xml --includes=io.ballerina.stdlib.java.jdbc.*:ballerinax.*'
 }
 
 task updateTomlFiles {
@@ -73,39 +72,9 @@ task updateTomlFiles {
     }
 }
 
-task commitTomlFiles {
-    doLast {
-        project.exec {
-            ignoreExitValue true
-            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine 'cmd', '/c', "git commit -m \"[Automated] Update the native jar versions\" Ballerina.toml Dependencies.toml CompilerPlugin.toml"
-            } else {
-                commandLine 'sh', '-c', "git commit -m '[Automated] Update the native jar versions' Ballerina.toml Dependencies.toml CompilerPlugin.toml"
-            }
-        }
-    }
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            artifact source: createArtifactZip, extension: 'zip'
-        }
-    }
-    repositories {
-        maven {
-            name = 'GitHubPackages'
-            url = uri("https://maven.pkg.github.com/ballerina-platform/module-${packageOrg}-${packageName}")
-            credentials {
-                username = System.getenv('publishUser')
-                password = System.getenv('publishPAT')
-            }
-        }
-    }
-}
+task commitTomlFiles {}
 
 updateTomlFiles.dependsOn copyStdlibs
 
-build.dependsOn "generatePomFileForMavenPublication"
 build.dependsOn ":${packageName}-native:build"
 test.dependsOn ":${packageName}-native:build"

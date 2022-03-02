@@ -13,12 +13,10 @@ Before using this connector in your Ballerina application, complete the followin
 * Create a [CData Connect Cloud](https://cloud.cdata.com) account.
 * Obtain the CData Connect Cloud `username` and `password` from the CData Connect Cloud dashboard. 
     * `<username>` is the email address of the user. For example `user@cdata.com`.
-    * `<password>` is a personal access token (PAT) that you generate from the **User Profile** page. For instructions on how to create a PAT to authenticate, see [Personal Access Tokens](https://cloud.cdata.com/docs/User-Profile.html#personal-access-tokens). The Ballerina connector for CData Connect Cloud uses Basic AuthSchema by default to connect.
+    * `<password>` is a personal access token (PAT) that you generate from the **User Profile** page. For instructions on how to create a PAT to authenticate, see [Personal Access Tokens](https://cloud.cdata.com/docs/User-Profile.html#personal-access-tokens). The CData Connect Connector uses Basic AuthScheme.
 * Make sure to go to the [Connections](https://cloud.cdata.com/docs/Connections.html) tab 
 in the CData Connect Cloud dashboard and set up any connection you need to work with the data sources. 
-You can use the **Connections** tab to configure a data source that contains the data you want to work with. 
-For more information on working with each data source, see [Data Sources](https://cloud.cdata.com/docs/Data-Sources.html).
-Use the **Connection Name** and **Data Source Name** to write your SQL queries.
+You can use the **Connections** tab to configure a data source that contains the data you want to work with.
 
 ### To connect to CData Connect Server
 
@@ -27,15 +25,12 @@ Use the **Connection Name** and **Data Source Name** to write your SQL queries.
     * `<username>` is the username you use to login to CData Cloud Connect Server.
     * `<password>` is the password you use to login to CData Cloud Connect Server.
 * Obtain the `<hostname>` and `<port>` where your CData Connect Server is up and running.
-* You need to specify the `<url>` as `jdbc:cdata:connect:URL=http://<hostname>:<port>/rest.rsc;`.
 * Make sure to go to the `Connections` tab in the CData Connect Server dashboard and set up any connection you need to work with the data sources. 
 You can use the **Connections** tab to configure a data source that contains the data you want to work with. 
-For more information on working with each data source, see [Data Sources](https://cloud.cdata.com/docs/Data-Sources.html).
-Use the **Connection Name** and **Data Source Name** to write your SQL queries.
  
 ## Quickstart
 
-To use the CData Connect Cloud connector in your Ballerina application, update the .bal file as follows:
+To use the CData Connect connector in your Ballerina application, update the .bal file as follows:
 
 ### Step 1: Import connector and driver
 Import the following modules into the Ballerina project:
@@ -46,12 +41,12 @@ import ballerinax/cdata.connect.driver as _;   // Get the CData driver
 ```
 
 ### Step 2: Create a new connector instance
-Provide the `<username>`, `<password>` to initialize the Cdata Connect client connector. 
+Provide the `<username>`, `<password>` to initialize the Cdata Connect connector. 
 Depending on your requirement, you can also pass optional properties and connection pool configurations during the client connector initialization. 
 For more information on connection string properties, see [Connection String Options](https://cdn.cdata.com/help/LHG/jdbc/Connection.htm).
 
 If you want to connect to CData Connect Cloud, you don't need to specify the `url`. 
-The default value will be `jdbc:cdata:connect:AuthScheme=Basic`. It uses Basic AuthSchema by default to connect.
+The default value will be `jdbc:cdata:connect:AuthScheme=Basic`.
 
 `<username>` is the email address of the user. For example `user@cdata.com`.
 `<password>` is a personal access token (PAT) that you generate from the **User Profile** page.
@@ -79,15 +74,15 @@ cdata:Client cdataClient = check new (user, password, url);
 You can also define `<username>`, `<password>` and `<url>` as configurable strings in your Ballerina program.
 
 ### Step 3: Invoke the connector operation
-1. Use the Ballerina CData Connect client connector to consume the CData Connect Cloud API. For more information on working with each data source, see [Data Sources](https://cloud.cdata.com/docs/Data-Sources.html). When you write SQL queries, be sure to specify the **Connection Name** and **Data Source Name** in the [Connections](https://cloud.cdata.com/docs/Connections.html) tab of the CData Cloud dashboard.
+1. Use the CData Connect connector to consume the CData Connect API. When you write SQL queries, be sure to specify the **Connection Name** and **Data Source Name** in the [Connections](https://cloud.cdata.com/docs/Connections.html) tab of the CData Connect Cloud dashboard or in the CData Connect Server.
 
     Now let’s take a look at a few sample operations.
 
-    Use the `query` operation to query data from the Salesforce API. 
     Let’s assume,
     - `Salesforce1` is the connection name. 
     - `Salesforce` is the data source name. 
-    - `Lead` is the table name.
+
+    Use the `query` operation to query data from the Salesforce API. 
 
     Following is a sample code to query data from a Salesforce table named `Lead`.
 
@@ -104,10 +99,6 @@ You can also define `<username>`, `<password>` and `<url>` as configurable strin
     ``` 
 
     Use the `execute` operation to perform DML and DDL operations.
-    Let’s assume,
-    - `Salesforce1` is the connection name. 
-    - `Salesforce` is the data source name. 
-    - `Lead` is the table name.
 
     Following is a sample code to insert data into a Salesforce table named `Lead`
 
@@ -120,10 +111,6 @@ You can also define `<username>`, `<password>` and `<url>` as configurable strin
     ```
 
     Use the `batchExecute` operation to perform a batch of DML and DDL operations.
-    Let’s assume,
-    - `Salesforce1` is the connection name. 
-    - `Salesforce` is the data source name. 
-    - `Lead` is the table name.
 
     Following is a sample code to insert multiple records into a Salesforce table named `Lead`
 
@@ -157,10 +144,6 @@ You can also define `<username>`, `<password>` and `<url>` as configurable strin
     }
     ```
     Use the `call` operation to execute a stored procedure.
-    Let’s assume,
-    - `Salesforce1` is the connection name. 
-    - `Salesforce` is the data source name. 
-    - `GetUserInformation` is the stored procedure name.
 
     Following is a sample code to execute the Salesforce stored procedure named `GetUserInformation`
 

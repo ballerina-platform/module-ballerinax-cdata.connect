@@ -45,3 +45,6 @@ target
 
 # Ignore Gradle build output directory
 build
+
+# Ignore lib
+lib
