@@ -17,42 +17,47 @@
 import ballerina/jballerina.java;
 import ballerina/sql;
 
-# The [Ballerina](https://ballerina.io/) connector for [CData Connect Cloud](https://cloud.cdata.com/docs/JDBC.html) 
-# allows you to programmatically access all of the CData Connect Cloud applications, databases, APIs, and services 
+# The [Ballerina](https://ballerina.io/) connector for [CData Connect](https://cloud.cdata.com/docs/JDBC.html) 
+# allows you to programmatically access all of the CData Connect applications, databases, APIs, and services
 # across an organization via the Java Database Connectivity (JDBC) API using [Ballerina](https://ballerina.io/). 
 # For detailed information on working with each data source, see [Data Sources](https://cloud.cdata.com/docs/Data-Sources.html).
-# CData Connect Cloud supports a wide range of standard DDL commands, SQL commands, and SQL functions to query data sources. 
-# For reference information on all the CData Connect Cloud SQL commands (i.e., DDL, DML, and query syntax), 
+# CData Connect supports a wide range of standard DDL commands, SQL commands, and SQL functions to query data sources. 
+# For reference information on all the CData Connect SQL commands (i.e., DDL, DML, and query syntax), 
 # see the [SQL Reference](https://cloud.cdata.com/docs/SQL-Reference.html).
 @display {label: "CData Connect", iconPath: "icon.png"}
 public isolated client class Client {
     *sql:Client;
 
     # Gets invoked to initialize the `connector`.
-    # The connector initialization requires setting the CData cloud `username` and `password` from the CData Cloud dashboard.
+    # The connector initialization requires setting the CData Connect `username` and `password`.
+    # If you want to connect to CData Connect Cloud, you don't need to specify the `url`. 
+    # The default value will be `jdbc:cdata:connect:AuthScheme=Basic`. It uses Basic AuthSchema by default to connect.
     # Create a [CData Connect Cloud account](https://cloud.cdata.com) and obtain the CData cloud `username` and `password` 
     # from the CData Cloud dashboard. 
     # `<username>` is the email address of the user. For example `user@cdata.com`. 
     # `<password>` is a personal access token (PAT) that you generate from the **User Profile** page. 
     # For instructions on how to create a PAT to authenticate, see [Personal Access Tokens](https://cloud.cdata.com/docs/User-Profile.html#personal-access-tokens). 
-    # The Ballerina connector for CData Connect Cloud uses Basic AuthSchema by default to connect.
-    # Make sure to go to the [Connections](https://cloud.cdata.com/docs/Connections.html) tab in the CData Cloud dashboard 
-    # and set up any connection you need to work with the data sources. 
+    # If you want to connect to CData Connect Server, you need to specify the `url` as `jdbc:cdata:connect:URL=http://<hostname>:<port>/rest.rsc;`.
+    # Replace the `<hostname>` and `<port>` with the information where your CData Cloud Connect Server is up and running.
+    # `<username>` is the username you use to login to CData Cloud Connect Server.
+    # `<password>` is the password you use to login to CData Cloud Connect Server.
+    # Make sure to go to the [Connections](https://cloud.cdata.com/docs/Connections.html) tab in the CData Connect Cloud dashboard 
+    # or in the CData Connect Server and set up any connection you need to work with the data sources. 
     # You can use the **Connections** tab to configure a data source that contains the data you want to work with. 
     # For more information on working with each data source, see [Data Sources](https://cloud.cdata.com/docs/Data-Sources.html).
     # Use the **Connection Name** and **Data Source Name** to write your SQL queries.
-    #
-    # + user - The user name of the CData Cloud Connect user. It is the email address of the user, e.g. user@cdata.com
-    # + password - The password for the CData Cloud user. 
-    #              It is a Personal Access Token (PAT) that you generate from the User Profile page.
-    # + options - The CData Cloud Connect connection string options
+    # 
+    # + user - The user name of the CData Connect user
+    # + password - The password for the CData Connect user
+    # + url - The JDBC URL to be used for the CData Connect connection
+    # + options - The CData Connect connection string options
     # + connectionPool - The `sql:ConnectionPool` to be used for the connection. If there is no
     #                    `connectionPool` provided, the global connection pool (shared by all clients) will be used
     # + return - An `sql:Error` if the client creation fails
-    public isolated function init(string user, string password,
+    public isolated function init(string user, string password, string url = JDBC_URL,
         Options? options = (), sql:ConnectionPool? connectionPool = ()) returns sql:Error? {
         ClientConfiguration clientConf = {
-            url: JDBC_URL,
+            url: url,
             user: user,
             password: password,
             options: options,

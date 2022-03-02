@@ -1,15 +1,15 @@
-Ballerina CData Connect Cloud Connector
+Ballerina CData Connect Connector
 ===================
 
 [![Build](https://github.com/ballerina-platform/module-ballerinax-cdata.connect/workflows/CI/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-cdata.connect/actions?query=workflow%3ACI)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-cdata.connect.svg)](https://github.com/ballerina-platform/module-ballerinax-cdata.connect/commits/master)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-[CData Connect Cloud](https://cloud.cdata.com) is a consolidated connectivity platform that links applications to a broad ecosystem of real-time data sources through consistent, standards-compliant interfaces. CData Connect Cloud provides tools to seamlessly access data from any system, anywhere.
+[CData Connect](https://www.cdata.com/connect) is a consolidated connectivity platform that links applications, on-premises or in the cloud to a broad ecosystem of real-time data sources through consistent, standards-compliant interfaces. CData Connect provides tools to seamlessly access data from any system, anywhere.
 
-The CData Connect Cloud [Ballerina](https://ballerina.io/) connector allows you to programmatically access all of the CData Connect Cloud applications, databases, APIs, services via the Java Database Connectivity (JDBC) API. 
+The CData Connect [Ballerina](https://ballerina.io/) connector allows you to programmatically access all of the CData Connect applications, databases, APIs, services via the Java Database Connectivity (JDBC) API. 
 It provides operations to execute a wide range of standard DDL Commands, SQL Commands, and SQL Functions for querying data sources. 
-You can find reference information for all the CData Connect Cloud SQL commands (DDL, DML, and query syntax) [here](https://cloud.cdata.com/docs/SQL-Reference.html).
+You can find reference information for all the CData Connect SQL commands (DDL, DML, and query syntax) [here](https://cloud.cdata.com/docs/SQL-Reference.html).
 
 For more information, go to the module(s).
 - [cdata.connect](Module.md)

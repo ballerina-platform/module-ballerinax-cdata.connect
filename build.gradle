@@ -95,22 +95,7 @@ subprojects {
         externalJars (group: 'io.ballerina.stdlib', name: 'sql-native', version: "${stdlibSqlVersion}") {
             transitive = false
         }
-
-        externalJars (group: 'com.h2database', name: 'h2', version: "${h2DriverVersion}") {
-            transitive = false
-        }
     }
-}
-
-def moduleVersion = project.version.replace("-SNAPSHOT", "")
-
-release {
-    failOnPublishNeeded = false
-    failOnSnapshotDependencies = true
-
-    buildTasks = ['build']
-    versionPropertyFile = 'gradle.properties'
-    tagTemplate = 'v$version'
 }
 
 task build {
