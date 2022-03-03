@@ -1,0 +1,78 @@
+name: Dev/Staging BCentral Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bal_central_environment:
+        description: Ballerina Central Environment
+        type: choice
+        options:
+        - STAGE
+        - DEV
+        required: true
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "release"
+  release:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    env: 
+      BALLERINA_${{ github.event.inputs.bal_central_environment }}_CENTRAL: true
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Set up Java Environment
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      # Grant execute permission to the gradlew script
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # Build the project with Gradle
+      - name: Build with Gradle
+        env:
+          packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
+          packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
+          JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
+        run: |
+          ./gradlew build
+
+      # Build Ballerina Project
+      - name: Ballerina Build
+        uses: ballerina-platform/ballerina-action/@master
+        with:
+          args:
+            pack ./ballerina
+        env:
+          JAVA_HOME: /usr/lib/jvm/default-jvm
+
+      # Push to Ballerina Staging Central
+      - name: Push to Staging
+        if: github.event.inputs.bal_central_environment == 'STAGE'
+        uses: ballerina-platform/ballerina-action/@master
+        with:
+          args:
+            push
+        env:
+          WORKING_DIR: ./ballerina
+          BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_STAGE_ACCESS_TOKEN }}
+          JAVA_HOME: /usr/lib/jvm/default-jvm
+
+      # Push to Ballerina Dev Central
+      - name: Push to Dev
+        if: github.event.inputs.bal_central_environment == 'DEV'
+        uses: ballerina-platform/ballerina-action/@master
+        with:
+          args:
+            push
+        env:
+          WORKING_DIR: ./ballerina
+          BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_DEV_ACCESS_TOKEN }}
+          JAVA_HOME: /usr/lib/jvm/default-jvm
