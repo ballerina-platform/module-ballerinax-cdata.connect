@@ -62,7 +62,7 @@ jobs:
         env:
           JAVA_HOME: /usr/lib/jvm/default-jvm
 
-      - name: Allert notifier on failure
+      - name: Alert notifier on failure
         if: failure() && (github.event.action == 'check_connector_for_breaking_changes')
         run: |
           curl -X POST \
