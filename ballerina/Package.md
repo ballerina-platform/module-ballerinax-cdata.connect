@@ -9,7 +9,7 @@ You can find reference information for all the CData Connect SQL commands (DDL, 
 ### Compatibility
 |                                   | Version                         |
 |-----------------------------------|---------------------------------|
-| Ballerina Language                | Ballerina Swan Lake 2201.0.1    | 
+| Ballerina Language                | Ballerina Swan Lake 2201.2.0    | 
 
 ## Report issues
 To report bugs, request new features, start new discussions, view project boards, etc., go to the [Ballerina Extended Library repository](https://github.com/ballerina-platform/ballerina-extended-library)
