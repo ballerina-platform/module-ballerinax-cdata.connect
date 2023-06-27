@@ -3,6 +3,7 @@ Ballerina CData Connect Connector
 
 [![Build](https://github.com/ballerina-platform/module-ballerinax-cdata.connect/workflows/CI/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-cdata.connect/actions?query=workflow%3ACI)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-cdata.connect.svg)](https://github.com/ballerina-platform/module-ballerinax-cdata.connect/commits/master)
+[![GraalVM Check](https://github.com/ballerina-platform/module-ballerinax-cdata.connect/actions/workflows/build-with-bal-test-native.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-cdata.connect/actions/workflows/build-with-bal-test-native.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 [CData Connect](https://www.cdata.com/connect) is a consolidated connectivity platform that links applications, on-premises or in the cloud to a broad ecosystem of real-time data sources through consistent, standards-compliant interfaces. CData Connect provides tools to seamlessly access data from any system, anywhere.
