@@ -51,6 +51,9 @@ jobs:
         uses: ballerina-platform/ballerina-action/@nightly
         with:
           args:
-            test ./ballerina
+            test --test-report --code-coverage --coverage-format=xml ./ballerina
         env:
             JAVA_HOME: /usr/lib/jvm/default-jvm
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
