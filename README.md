@@ -2,6 +2,7 @@ Ballerina CData Connect Connector
 ===================
 
 [![Build](https://github.com/ballerina-platform/module-ballerinax-cdata.connect/workflows/CI/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-cdata.connect/actions?query=workflow%3ACI)
+[![Trivy](https://github.com/ballerina-platform/module-ballerinax-cdata.connect/actions/workflows/trivy-scan.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-cdata.connect/actions/workflows/trivy-scan.yml)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-cdata.connect.svg)](https://github.com/ballerina-platform/module-ballerinax-cdata.connect/commits/master)
 [![GraalVM Check](https://github.com/ballerina-platform/module-ballerinax-cdata.connect/actions/workflows/build-with-bal-test-native.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-cdata.connect/actions/workflows/build-with-bal-test-native.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
