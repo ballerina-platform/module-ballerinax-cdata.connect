@@ -16,7 +16,7 @@
 
 import ballerina/sql;
 import ballerinax/cdata.connect as cdata;  // Get the CData connector
-import ballerinax/cdata.driver as _;       // Get the CData driver
+import ballerinax/cdata.connect.driver as _;       // Get the CData driver
 
 // Connection Configurations
 configurable string user = ?;
