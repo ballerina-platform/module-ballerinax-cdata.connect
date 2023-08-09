@@ -40,6 +40,7 @@ task updateTomlFiles {
     doLast {
         def newConfig = ballerinaTomlFilePlaceHolder.text.replace('@project.version@', project.version.toString())
         newConfig = newConfig.replace('@toml.version@', tomlVersion)
+        newConfig = newConfig.replace('@sql.native.version@', project.stdlibSqlVersion)
         ballerinaTomlFile.text = newConfig
     }
 }

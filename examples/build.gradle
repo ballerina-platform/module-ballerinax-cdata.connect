@@ -17,7 +17,7 @@
 
 apply plugin: 'java'
 
-description = 'Ballerina - Cdata-connect Examples'
+description = 'Ballerina - Cdata.Connect Examples'
 
 def filePath = project.fileTree("${project.projectDir}")
 def examples = filePath.matching {
