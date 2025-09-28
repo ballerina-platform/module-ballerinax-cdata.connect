@@ -9,8 +9,16 @@ icon = "icon.png"
 license = ["Apache-2.0"]
 distribution = "2201.7.0"
 
+[build-options]
+observabilityIncluded = true
+
+[platform.java11]
+graalvmCompatible = true
+
 [[platform.java11.dependency]]
 path = "../native/build/libs/cdata-connect-native-1.2.0.jar"
 
 [[platform.java11.dependency]]
-path = "./lib/sql-native-1.10.0.jar"
+path = "./lib/sql-native-1.14.2.jar"
+
+
