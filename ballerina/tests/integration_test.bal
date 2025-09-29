@@ -1,7 +1,6 @@
 import ballerina/test;
 import ballerina/sql;
 
-// Test end-to-end integration
 @test:Config {}
 function testEndToEndIntegration() returns error? {
     var cdataClient = getTestClient();
