@@ -1,5 +1,6 @@
 import ballerina/sql;
 import ballerina/io;
+import ballerina/log;
 
 // Configuration variables that will be read from Config.toml
 configurable string TEST_URL = "jdbc:cdata:connect:AuthScheme=Basic";
@@ -140,27 +141,27 @@ public function getTestClient() returns TestClient {
         // Try creating real client with various configurations
         Client|error realClient = tryCreateRealClient();
         if realClient is Client {
-            io:println("Using real CData Connect client for comprehensive testing");
+            log:printDebug("Using real CData Connect client for comprehensive testing");
             return realClient;
         }
         
         // Try with different URL configurations
         Client|error urlVariantClient = tryCreateClientWithURLVariants();
         if urlVariantClient is Client {
-            io:println("Using CData Connect client with URL variants");
+            log:printDebug("Using CData Connect client with URL variants");
             return urlVariantClient;
         }
         
         // Try with mock mode explicitly enabled
         Client|error mockModeClient = tryCreateMockModeClient();
         if mockModeClient is Client {
-            io:println("Using CData Connect client in mock mode");
+            log:printDebug("Using CData Connect client in mock mode");
             return mockModeClient;
         }
     }
     
     // Fall back to mock client
-    io:println("Using mock client for comprehensive testing");
+    log:printDebug("Using mock client for comprehensive testing");
     return createMockClient();
 }
 

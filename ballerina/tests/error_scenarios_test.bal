@@ -100,21 +100,11 @@ function testClientCreationErrorPaths() returns error? {
     Client|error malformedURL = trap new("user", "pass", "not-a-url-at-all");
     Client|error emptyURL = trap new("user", "pass", "");
     
-    // Test with extreme values using loops
-    string veryLongUser = "";
-    int i = 0;
-    while i < 1000 {
-        veryLongUser += "a";
-        i += 1;
-    }
+    // Test with extreme values using efficient string building
+    string veryLongUser = "a".repeat(1000);
     Client|error longUser = trap new(veryLongUser, "pass", JDBC_URL);
     
-    string veryLongPass = "";
-    int j = 0;
-    while j < 1000 {
-        veryLongPass += "b";
-        j += 1;
-    }
+    string veryLongPass = "b".repeat(1000);
     Client|error longPass = trap new("user", veryLongPass, JDBC_URL);
     
     // Test each result individually
@@ -171,13 +161,8 @@ function testParameterErrorPaths() returns error? {
             _ = check nullResult.close();
         }
         
-        // Very large parameters using loops
-        string largeString = "";
-        int largeCount = 0;
-        while largeCount < 1000 {
-            largeString += "x";
-            largeCount += 1;
-        }
+        // Very large parameters using efficient string building
+        string largeString = "x".repeat(1000);
         sql:ParameterizedQuery largeParamQuery = `SELECT ${largeString} as large_string`;
         stream<record {}, sql:Error?>|error largeResult = trap cdataClient->query(largeParamQuery);
         if largeResult is stream<record {}, sql:Error?> {
