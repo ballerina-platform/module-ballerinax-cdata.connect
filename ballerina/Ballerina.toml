@@ -20,5 +20,3 @@ path = "../native/build/libs/cdata-connect-native-1.2.0.jar"
 
 [[platform.java11.dependency]]
 path = "./lib/sql-native-1.14.2.jar"
-
-
