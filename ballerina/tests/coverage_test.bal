@@ -1,3 +1,19 @@
+// Copyright (c) 2024 WSO2 LLC. (https://www.wso2.com).
+//
+// WSO2 LLC. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
 import ballerina/test;
 import ballerina/sql;
 
@@ -6,27 +22,18 @@ import ballerina/sql;
 @test:Config {}
 function testEmptyBatchExecuteValidation() returns error? {
     // TARGET: Line 100 - empty array validation in batchExecute
-    Client|error cdataClient = trap new("test_user", "test_pass", JDBC_URL);
+    Client cdataClient = check new("test_user", "test_pass", JDBC_URL);
     
-    if cdataClient is Client {
-        sql:ParameterizedQuery[] emptyQueries = [];
-        sql:ExecutionResult[]|sql:Error result = cdataClient->batchExecute(emptyQueries);
-        
-        test:assertTrue(result is sql:Error, msg = "Empty batch should return error");
-        if result is sql:Error {
-            test:assertTrue(result.message().includes("empty array"), 
-                           msg = "Error should mention empty array");
-        }
-        
-        _ = check cdataClient.close();
-    } else {
-        // Test with mock client
-        TestClient mockClient = getTestClient();
-        sql:ParameterizedQuery[] emptyQueries = [];
-        sql:ExecutionResult[]|sql:Error result = performBatchExecute(mockClient, emptyQueries);
-        test:assertTrue(result is sql:Error, msg = "Empty batch should return error");
-        _ = check closeTestClient(mockClient);
+    sql:ParameterizedQuery[] emptyQueries = [];
+    sql:ExecutionResult[]|sql:Error result = cdataClient->batchExecute(emptyQueries);
+    
+    test:assertTrue(result is sql:Error, msg = "Empty batch should return error");
+    if result is sql:Error {
+        test:assertTrue(result.message().includes("empty array"), 
+                       msg = "Error should mention empty array");
     }
+    
+    check cdataClient.close();
 }
 
 @test:Config {}
@@ -34,28 +41,26 @@ function testConstructorOverloads() returns error? {
     // TARGET: All constructor variations to hit initialization paths
     
     // Constructor 1: (user, password)
-    Client|error client1 = trap new("user1", "pass1");
-    if client1 is Client { _ = check client1.close(); }
+    Client client1 = check new("user1", "pass1");
+    check client1.close();
     
     // Constructor 2: (user, password, url)
-    Client|error client2 = trap new("user2", "pass2", JDBC_URL);
-    if client2 is Client { _ = check client2.close(); }
+    Client client2 = check new("user2", "pass2", JDBC_URL);
+    check client2.close();
     
     // Constructor 3: (user, password, url, options)
     Options opts = {miscellaneous: {timeout: 30}};
-    Client|error client3 = trap new("user3", "pass3", JDBC_URL, opts);
-    if client3 is Client { _ = check client3.close(); }
+    Client client3 = check new("user3", "pass3", JDBC_URL, opts);
+    check client3.close();
     
     // Constructor 4: (user, password, url, options, pool)
     sql:ConnectionPool pool = {maxOpenConnections: 5};
-    Client|error client4 = trap new("user4", "pass4", JDBC_URL, opts, pool);
-    if client4 is Client { _ = check client4.close(); }
+    Client client4 = check new("user4", "pass4", JDBC_URL, opts, pool);
+    check client4.close();
     
     // Constructor 5: (user, password, url, (), pool)
-    Client|error client5 = trap new("user5", "pass5", JDBC_URL, (), pool);
-    if client5 is Client { _ = check client5.close(); }
-    
-    test:assertTrue(true, msg = "All constructor overloads tested");
+    Client client5 = check new("user5", "pass5", JDBC_URL, (), pool);
+    check client5.close();
 }
 
 @test:Config {}
@@ -77,13 +82,9 @@ function testJDBCURLConstantUsage() returns error? {
         test:assertTrue(url.startsWith(JDBC_URL), 
                        msg = "URL variations should start with JDBC_URL constant");
         
-        Client|error testClient = trap new("user", "pass", url);
-        if testClient is Client {
-            _ = check testClient.close();
-        }
+        Client testClient = check new("user", "pass", url);
+        check testClient.close();
     }
-    
-    test:assertTrue(true, msg = "JDBC_URL constant usage completed");
 }
 
 @test:Config {}
@@ -109,8 +110,6 @@ function testClientConfigurationRecord() returns error? {
     // Verify record field access
     test:assertTrue(config1.url is string, msg = "Config URL should be string");
     test:assertTrue(config2.options is Options, msg = "Config options should be set");
-    
-    test:assertTrue(true, msg = "ClientConfiguration record coverage completed");
 }
 
 @test:Config {}
@@ -122,8 +121,8 @@ function testComprehensiveEnumUsage() returns error? {
     foreach FirewallType fwType in firewallTypes {
         Firewall fw = {firewallType: fwType, firewallServer: "test.com"};
         Options opts = {firewall: fw};
-        Client|error testClient = trap new("user", "pass", JDBC_URL, opts);
-        if testClient is Client { _ = check testClient.close(); }
+        Client testClient = check new("user", "pass", JDBC_URL, opts);
+        check testClient.close();
     }
     
     // Test all ProxyAuthScheme values
@@ -131,8 +130,8 @@ function testComprehensiveEnumUsage() returns error? {
     foreach ProxyAuthScheme authScheme in authSchemes {
         Proxy proxy = {proxyAuthScheme: authScheme, proxyServer: "proxy.com"};
         Options opts = {proxy: proxy};
-        Client|error testClient = trap new("user", "pass", JDBC_URL, opts);
-        if testClient is Client { _ = check testClient.close(); }
+        Client testClient = check new("user", "pass", JDBC_URL, opts);
+        check testClient.close();
     }
     
     // Test all ProxySSLType values
@@ -140,11 +139,9 @@ function testComprehensiveEnumUsage() returns error? {
     foreach ProxySSLType sslType in sslTypes {
         Proxy proxy = {proxySSLType: sslType, proxyServer: "ssl-proxy.com"};
         Options opts = {proxy: proxy};
-        Client|error testClient = trap new("user", "pass", JDBC_URL, opts);
-        if testClient is Client { _ = check testClient.close(); }
+        Client testClient = check new("user", "pass", JDBC_URL, opts);
+        check testClient.close();
     }
-    
-    test:assertTrue(true, msg = "Comprehensive enum usage completed");
 }
 
 @test:Config {}
@@ -171,54 +168,42 @@ function testOptionsRecordCombinations() returns error? {
     ];
     
     foreach Options opts in optionsCombinations {
-        Client|error testClient = trap new("user", "pass", JDBC_URL, opts);
-        if testClient is Client {
-            _ = check testClient.close();
-        }
+        Client testClient = check new("user", "pass", JDBC_URL, opts);
+        check testClient.close();
     }
-    
-    test:assertTrue(true, msg = "Options record combinations tested");
 }
 
 @test:Config {}
 function testMethodWrapperCalls() returns error? {
     // TARGET: Method wrapper code around external functions
-    Client|error cdataClient = trap new("user", "pass", JDBC_URL + ";MockMode=true");
+    Client cdataClient = check new("user", "pass", JDBC_URL + ";MockMode=true");
     
-    if cdataClient is Client {
-        // Test query wrapper
-        sql:ParameterizedQuery query1 = `SELECT 'test' as value`;
-        stream<record {}, sql:Error?> queryResult = cdataClient->query(query1);
-        _ = check queryResult.close();
-        
-        // Test queryRow wrapper
-        sql:ParameterizedQuery query2 = `SELECT 1 as id`;
-        record {}|sql:Error queryRowResult = cdataClient->queryRow(query2);
-        test:assertTrue(true, msg = "QueryRow wrapper executed");
-        
-        // Test execute wrapper
-        sql:ParameterizedQuery query3 = `INSERT INTO test VALUES (1)`;
-        sql:ExecutionResult|sql:Error executeResult = cdataClient->execute(query3);
-        test:assertTrue(true, msg = "Execute wrapper executed");
-        
-        // Test call wrapper
-        sql:ParameterizedCallQuery callQuery = `{CALL test_proc()}`;
-        sql:ProcedureCallResult|sql:Error callResult = cdataClient->call(callQuery);
-        if callResult is sql:ProcedureCallResult {
-            _ = check callResult.close();
-        }
-        test:assertTrue(true, msg = "Call wrapper executed");
-        
-        // Test non-empty batch to hit nativeBatchExecute path
-        sql:ParameterizedQuery[] batchQueries = [
-            `SELECT 1 as id`,
-            `SELECT 2 as id`
-        ];
-        sql:ExecutionResult[]|sql:Error batchResult = cdataClient->batchExecute(batchQueries);
-        test:assertTrue(true, msg = "Batch execute wrapper executed");
-        
-        _ = check cdataClient.close();
+    // Test query wrapper
+    sql:ParameterizedQuery query1 = `SELECT 'test' as value`;
+    stream<record {}, sql:Error?> queryResult = cdataClient->query(query1);
+    check queryResult.close();
+    
+    // Test queryRow wrapper
+    sql:ParameterizedQuery query2 = `SELECT 1 as id`;
+    record {}|sql:Error queryRowResult = cdataClient->queryRow(query2);
+    
+    // Test execute wrapper
+    sql:ParameterizedQuery query3 = `INSERT INTO test VALUES (1)`;
+    sql:ExecutionResult|sql:Error executeResult = cdataClient->execute(query3);
+    
+    // Test call wrapper
+    sql:ParameterizedCallQuery callQuery = `{CALL test_proc()}`;
+    sql:ProcedureCallResult|sql:Error callResult = cdataClient->call(callQuery);
+    if callResult is sql:ProcedureCallResult {
+        check callResult.close();
     }
     
-    test:assertTrue(true, msg = "Method wrapper calls completed");
+    // Test non-empty batch to hit nativeBatchExecute path
+    sql:ParameterizedQuery[] batchQueries = [
+        `SELECT 1 as id`,
+        `SELECT 2 as id`
+    ];
+    sql:ExecutionResult[]|sql:Error batchResult = cdataClient->batchExecute(batchQueries);
+    
+    check cdataClient.close();
 }

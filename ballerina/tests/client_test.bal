@@ -1,3 +1,19 @@
+// Copyright (c) 2024 WSO2 LLC. (https://www.wso2.com).
+//
+// WSO2 LLC. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
 import ballerina/test;
 import ballerina/sql;
 import ballerina/io;
@@ -5,25 +21,15 @@ import ballerina/io;
 @test:Config {}
 function testBasicClientCreation() returns error? {
     // Test basic client creation with username/password only
-    Client|error basicClient = trap new(TEST_USER, TEST_PASSWORD);
-    if basicClient is Client {
-        test:assertTrue(true, msg = "Basic client creation successful");
-        _ = check basicClient.close();
-    } else {
-        test:assertTrue(true, msg = "Basic client creation failed as expected in test environment");
-    }
+    Client basicClient = check new(TEST_USER, TEST_PASSWORD);
+    check basicClient.close();
 }
 
 @test:Config {}
 function testClientCreationWithURL() returns error? {
     // Test client creation with custom URL
-    Client|error urlClient = trap new(TEST_USER, TEST_PASSWORD, TEST_URL);
-    if urlClient is Client {
-        test:assertTrue(true, msg = "URL client creation successful");
-        _ = check urlClient.close();
-    } else {
-        test:assertTrue(true, msg = "URL client creation handled appropriately");
-    }
+    Client urlClient = check new(TEST_USER, TEST_PASSWORD, TEST_URL);
+    check urlClient.close();
 }
 
 @test:Config {}
@@ -41,13 +47,8 @@ function testClientCreationWithOptions() returns error? {
         }
     };
     
-    Client|error optionsClient = trap new(TEST_USER, TEST_PASSWORD, TEST_URL, testOptions);
-    if optionsClient is Client {
-        test:assertTrue(true, msg = "Options client creation successful");
-        _ = check optionsClient.close();
-    } else {
-        test:assertTrue(true, msg = "Options client creation handled appropriately");
-    }
+    Client optionsClient = check new(TEST_USER, TEST_PASSWORD, TEST_URL, testOptions);
+    check optionsClient.close();
 }
 
 @test:Config {}
@@ -59,13 +60,8 @@ function testClientCreationWithConnectionPool() returns error? {
         minIdleConnections: 1
     };
     
-    Client|error poolClient = trap new(TEST_USER, TEST_PASSWORD, TEST_URL, (), pool);
-    if poolClient is Client {
-        test:assertTrue(true, msg = "Pool client creation successful");
-        _ = check poolClient.close();
-    } else {
-        test:assertTrue(true, msg = "Pool client creation handled appropriately");
-    }
+    Client poolClient = check new(TEST_USER, TEST_PASSWORD, TEST_URL, (), pool);
+    check poolClient.close();
 }
 
 @test:Config {}
@@ -100,13 +96,8 @@ function testClientCreationWithOptionsAndPool() returns error? {
         maxConnectionLifeTime: 600
     };
     
-    Client|error fullClient = trap new(TEST_USER, TEST_PASSWORD, TEST_URL, fullOptions, pool);
-    if fullClient is Client {
-        test:assertTrue(true, msg = "Full options client creation successful");
-        _ = check fullClient.close();
-    } else {
-        test:assertTrue(true, msg = "Full options client creation handled appropriately");
-    }
+    Client fullClient = check new(TEST_USER, TEST_PASSWORD, TEST_URL, fullOptions, pool);
+    check fullClient.close();
 }
 
 @test:Config {}
@@ -130,11 +121,10 @@ function testQueryMethod() returns error? {
             results.push(result);
         };
     
-    test:assertTrue(results.length() >= 0, msg = "Query method should execute successfully");
+    test:assertTrue(results.length() >= 0);
     io:println("Query method test - processed ", results.length(), " records");
     
-    error? closeResult = closeTestClient(testConn);
-    test:assertFalse(closeResult is error, msg = "Client should close without error");
+    check closeTestClient(testConn);
 }
 
 @test:Config {}
@@ -151,19 +141,14 @@ function testQueryRowMethod() returns error? {
     anydata|sql:Error queryRowResult = performQueryRow(testConn, singleRowQuery);
     
     if queryRowResult is record {} {
-        test:assertTrue(true, msg = "QueryRow method returned record successfully");
         io:println("QueryRow result: ", queryRowResult);
     } else if queryRowResult is sql:NoRowsError {
-        test:assertTrue(true, msg = "QueryRow method handled no rows appropriately");
+        io:println("QueryRow method handled no rows");
     } else if queryRowResult is sql:Error {
-        test:assertTrue(true, msg = "QueryRow method handled error appropriately");
         io:println("QueryRow error: ", queryRowResult.message());
-    } else {
-        test:assertTrue(true, msg = "QueryRow method executed");
     }
     
-    error? closeResult = closeTestClient(testConn);
-    test:assertFalse(closeResult is error, msg = "Client should close without error");
+    check closeTestClient(testConn);
 }
 
 @test:Config {}
@@ -179,14 +164,12 @@ function testExecuteMethod() returns error? {
     sql:ExecutionResult|sql:Error executeResult = performExecute(testConn, insertQuery);
     
     if executeResult is sql:ExecutionResult {
-        test:assertTrue(true, msg = "Execute method returned ExecutionResult successfully");
         io:println("Execute result - affected rows: ", executeResult.affectedRowCount);
         
         if executeResult.lastInsertId is int {
             io:println("Last insert ID: ", executeResult.lastInsertId);
         }
     } else {
-        test:assertTrue(true, msg = "Execute method handled error appropriately");
         io:println("Execute error: ", executeResult.message());
     }
     
@@ -198,11 +181,9 @@ function testExecuteMethod() returns error? {
     `;
     
     sql:ExecutionResult|sql:Error updateResult = performExecute(testConn, updateQuery);
-    test:assertTrue(updateResult is sql:ExecutionResult || updateResult is sql:Error, 
-                   msg = "Update execute should return result or error");
+    test:assertTrue(updateResult is sql:ExecutionResult || updateResult is sql:Error);
     
-    error? closeResult = closeTestClient(testConn);
-    test:assertFalse(closeResult is error, msg = "Client should close without error");
+    check closeTestClient(testConn);
 }
 
 @test:Config {}
@@ -220,24 +201,21 @@ function testBatchExecuteMethod() returns error? {
     sql:ExecutionResult[]|sql:Error batchResult = performBatchExecute(testConn, batchQueries);
     
     if batchResult is sql:ExecutionResult[] {
-        test:assertTrue(true, msg = "Batch execute method successful");
         io:println("Batch execute completed - ", batchResult.length(), " operations");
         
         foreach sql:ExecutionResult result in batchResult {
             io:println("Batch operation affected rows: ", result.affectedRowCount);
         }
     } else {
-        test:assertTrue(true, msg = "Batch execute method handled error appropriately");
         io:println("Batch execute error: ", batchResult.message());
     }
     
     // Test empty batch (should trigger validation error)
     sql:ParameterizedQuery[] emptyBatch = [];
     sql:ExecutionResult[]|sql:Error emptyResult = performBatchExecute(testConn, emptyBatch);
-    test:assertTrue(emptyResult is sql:Error, msg = "Empty batch should return error");
+    test:assertTrue(emptyResult is sql:Error);
     
-    error? closeResult = closeTestClient(testConn);
-    test:assertFalse(closeResult is error, msg = "Client should close without error");
+    check closeTestClient(testConn);
 }
 
 @test:Config {}
@@ -250,8 +228,6 @@ function testCallMethod() returns error? {
     sql:ProcedureCallResult|sql:Error callResult = performCall(testConn, callQuery);
     
     if callResult is sql:ProcedureCallResult {
-        test:assertTrue(true, msg = "Call method executed successfully");
-        
         // Process query result if available
         stream<record {}, sql:Error?>? queryResult = callResult.queryResult;
         if queryResult is stream<record {}, sql:Error?> {
@@ -259,27 +235,24 @@ function testCallMethod() returns error? {
             if firstResult is record {} {
                 io:println("Call query result: ", firstResult);
             }
-            _ = check queryResult.close();
+            check queryResult.close();
         }
         
-        _ = check callResult.close();
+        check callResult.close();
     } else {
-        test:assertTrue(true, msg = "Call method handled error appropriately");
         io:println("Call error: ", callResult.message());
     }
     
     // Test call with OUT parameters
     sql:ParameterizedCallQuery outParamCall = `{CALL test_proc_with_out(?, ?)}`;
     sql:ProcedureCallResult|sql:Error outResult = performCall(testConn, outParamCall);
-    test:assertTrue(outResult is sql:ProcedureCallResult || outResult is sql:Error,
-                   msg = "OUT parameter call should execute");
+    test:assertTrue(outResult is sql:ProcedureCallResult || outResult is sql:Error);
     
     if outResult is sql:ProcedureCallResult {
-        _ = check outResult.close();
+        check outResult.close();
     }
     
-    error? closeResult = closeTestClient(testConn);
-    test:assertFalse(closeResult is error, msg = "Client should close without error");
+    check closeTestClient(testConn);
 }
 
 @test:Config {}
@@ -305,12 +278,9 @@ function testParameterizedQueries() returns error? {
     
     record {}|error? firstResult = resultStream.next();
     if firstResult is record {} {
-        test:assertTrue(true, msg = "Parameterized query executed successfully");
         io:println("Parameterized query result: ", firstResult);
     } else if firstResult is () {
-        test:assertTrue(true, msg = "Parameterized query completed with no results");
-    } else {
-        test:assertTrue(true, msg = "Parameterized query handled error appropriately");
+        io:println("Parameterized query completed with no results");
     }
     
     check resultStream.close();
@@ -328,12 +298,10 @@ function testParameterizedQueries() returns error? {
     
     stream<record {}, sql:Error?> nullResultStream = performQuery(testConn, nullParamQuery);
     record {}|error? nullResult = nullResultStream.next();
-    test:assertTrue(nullResult is record {} || nullResult is () || nullResult is error,
-                   msg = "Null parameter query should execute");
+    test:assertTrue(nullResult is record {} || nullResult is () || nullResult is error);
     check nullResultStream.close();
     
-    error? closeResult = closeTestClient(testConn);
-    test:assertFalse(closeResult is error, msg = "Client should close without error");
+    check closeTestClient(testConn);
 }
 
 @test:Config {}
@@ -352,15 +320,12 @@ function testTransactionScenarios() returns error? {
     sql:ExecutionResult[]|sql:Error transactionResult = performBatchExecute(testConn, transactionQueries);
     
     if transactionResult is sql:ExecutionResult[] {
-        test:assertTrue(true, msg = "Transaction simulation completed successfully");
         io:println("Transaction operations completed: ", transactionResult.length());
     } else {
-        test:assertTrue(true, msg = "Transaction simulation handled error appropriately");
         io:println("Transaction error: ", transactionResult.message());
     }
     
-    error? closeResult = closeTestClient(testConn);
-    test:assertFalse(closeResult is error, msg = "Client should close without error");
+    check closeTestClient(testConn);
 }
 
 @test:Config {}
@@ -392,7 +357,7 @@ function testComplexQueryScenarios() returns error? {
             }
         };
     
-    test:assertTrue(recordCount >= 0, msg = "Complex JOIN query should execute");
+    test:assertTrue(recordCount >= 0);
     io:println("Complex query processed ", recordCount, " records");
     
     // Test aggregate query
@@ -418,11 +383,10 @@ function testComplexQueryScenarios() returns error? {
             aggResults.push(result);
         };
     
-    test:assertTrue(aggResults.length() >= 0, msg = "Aggregate query should execute");
+    test:assertTrue(aggResults.length() >= 0);
     io:println("Aggregate query returned ", aggResults.length(), " departments");
     
-    error? closeResult = closeTestClient(testConn);
-    test:assertFalse(closeResult is error, msg = "Client should close without error");
+    check closeTestClient(testConn);
 }
 
 @test:Config {}
@@ -430,7 +394,7 @@ function testGraalVMCompatibilityScenarios() returns error? {
     // Test scenarios specifically for GraalVM compatibility
     
     // Test client creation in GraalVM context
-    Client|error graalClient = trap new(TEST_USER, TEST_PASSWORD, TEST_URL + ";GraalVM=compatible");
+    Client|sql:Error graalClient = new(TEST_USER, TEST_PASSWORD, TEST_URL + ";GraalVM=compatible");
     if graalClient is Client {
         // Test basic operations
         sql:ParameterizedQuery graalQuery = `
@@ -443,15 +407,10 @@ function testGraalVMCompatibilityScenarios() returns error? {
         stream<record {}, sql:Error?>|error queryResult = trap graalClient->query(graalQuery);
         if queryResult is stream<record {}, sql:Error?> {
             record {}|error? result = queryResult.next();
-            test:assertTrue(result is record {} || result is (), 
-                           msg = "GraalVM query should execute");
             check queryResult.close();
         }
         
-        _ = check graalClient.close();
-        test:assertTrue(true, msg = "GraalVM client test completed");
-    } else {
-        test:assertTrue(true, msg = "GraalVM client test skipped - connection not available");
+        check graalClient.close();
     }
     
     // Test memory efficiency patterns for native compilation
@@ -471,10 +430,7 @@ function testGraalVMCompatibilityScenarios() returns error? {
         check memStream.close();
     }
     
-    error? closeResult = closeTestClient(testConn);
-    test:assertFalse(closeResult is error, msg = "Client should close without error");
-    
-    test:assertTrue(true, msg = "GraalVM compatibility scenarios completed");
+    check closeTestClient(testConn);
 }
 
 @test:Config {}
@@ -503,11 +459,8 @@ function testClientResourceManagement() returns error? {
     
     // Close all clients
     foreach TestClient conn in connections {
-        error? closeResult = closeTestClient(conn);
-        test:assertFalse(closeResult is error, msg = "Each client should close without error");
+        check closeTestClient(conn);
     }
-    
-    test:assertTrue(true, msg = "Resource management test completed");
 }
 
 @test:Config {}
@@ -526,16 +479,10 @@ function testErrorRecoveryScenarios() returns error? {
         if result is stream<record {}, sql:Error?> {
             record {}|error? queryResult = result.next();
             check result.close();
-            test:assertTrue(true, msg = "Query executed or handled appropriately");
-        } else {
-            test:assertTrue(true, msg = "Query error handled appropriately");
         }
     }
     
-    error? closeResult = closeTestClient(testConn);
-    test:assertFalse(closeResult is error, msg = "Client should close without error after errors");
-    
-    test:assertTrue(true, msg = "Error recovery scenarios completed");
+    check closeTestClient(testConn);
 }
 
 @test:Config {}
@@ -544,7 +491,6 @@ function testClientConfigurationValidation() returns error? {
     
     // Test SSL configuration validation
     SSL validSSL = {sslServerCert: "/valid/path/cert.pem"};
-    SSL invalidSSL = {sslServerCert: ""};
     
     // Test Firewall configuration validation
     Firewall validFirewall = {
@@ -602,10 +548,8 @@ function testClientConfigurationValidation() returns error? {
     };
     
     // Test client creation with comprehensive options
-    Client|error configClient = trap new(TEST_USER, TEST_PASSWORD, TEST_URL, comprehensiveOptions);
+    Client|sql:Error configClient = new(TEST_USER, TEST_PASSWORD, TEST_URL, comprehensiveOptions);
     if configClient is Client {
-        test:assertTrue(true, msg = "Comprehensive configuration client created successfully");
-        
         // Test basic operation with configured client
         sql:ParameterizedQuery configQuery = `
             SELECT 
@@ -620,10 +564,6 @@ function testClientConfigurationValidation() returns error? {
             check configResult.close();
         }
         
-        _ = check configClient.close();
-    } else {
-        test:assertTrue(true, msg = "Configuration validation handled appropriately");
+        check configClient.close();
     }
-    
-    test:assertTrue(true, msg = "Client configuration validation completed");
 }
