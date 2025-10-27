@@ -1,4 +1,4 @@
-// Copyright (c) 2024 WSO2 LLC. (https://www.wso2.com).
+// Copyright (c) 2025 WSO2 LLC. (https://www.wso2.com).
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -105,11 +105,11 @@ function testClientCreationErrorPaths() returns error? {
     Client|sql:Error malformedURL = new("user", "pass", "not-a-url-at-all");
     Client|sql:Error emptyURL = new("user", "pass", "");
     
-    // Test with extreme values using efficient string building
-    string veryLongUser = "a".repeat(1000);
+    // Test with extreme values using file-based strings
+    string veryLongUser = check io:fileReadString("tests/resources/long_user.txt");
     Client|sql:Error longUser = new(veryLongUser, "pass", JDBC_URL);
     
-    string veryLongPass = "b".repeat(1000);
+    string veryLongPass = check io:fileReadString("tests/resources/long_pass.txt");
     Client|sql:Error longPass = new("user", veryLongPass, JDBC_URL);
     
     // Test each result individually
@@ -159,8 +159,8 @@ function testParameterErrorPaths() returns error? {
         check nullResult.close();
     }
     
-    // Very large parameters using efficient string building
-    string largeString = "x".repeat(1000);
+    // Very large parameters using file-based string
+    string largeString = check io:fileReadString("tests/resources/large_string.txt");
     sql:ParameterizedQuery largeParamQuery = `SELECT ${largeString} as large_string`;
     stream<record {}, sql:Error?>|error largeResult = trap cdataClient->query(largeParamQuery);
     if largeResult is stream<record {}, sql:Error?> {
