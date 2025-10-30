@@ -17,6 +17,7 @@
 import ballerina/test;
 import ballerina/sql;
 import ballerina/io;
+import ballerinax/cdata.connect.driver as _; // Get the CData driver
 
 @test:Config {}
 function testGraalVMBasicQuery() returns error? {

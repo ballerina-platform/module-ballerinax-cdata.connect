@@ -16,6 +16,7 @@
 
 import ballerina/test;
 import ballerina/sql;
+import ballerinax/cdata.connect.driver as _; // Get the CData driver
 
 @test:Config {}
 function testEndToEndIntegration() returns error? {
@@ -45,9 +46,9 @@ function testEndToEndIntegration() returns error? {
         sql:ParameterizedQuery paramQuery = `SELECT ${testParam} as param_value`;
         
         stream<record {}, error?> paramStream = cdataClient->query(paramQuery);
-        record {}|error? paramResult = paramStream.next();
+        record {}|error? _paramResult = paramStream.next();
+        _ = _paramResult is error;
         
-        // If there's an error, let it propagate naturally
         check paramStream.close();
         
         check cdataClient.close();

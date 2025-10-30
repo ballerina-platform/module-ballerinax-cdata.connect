@@ -17,6 +17,7 @@
 import ballerina/sql;
 import ballerina/io;
 import ballerina/log;
+import ballerinax/cdata.connect.driver as _; // Get the CData driver
 
 // Configuration variables that will be read from Config.toml
 configurable string TEST_URL = "jdbc:cdata:connect:AuthScheme=Basic";

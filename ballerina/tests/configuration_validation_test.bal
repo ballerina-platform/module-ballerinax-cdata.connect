@@ -15,6 +15,7 @@
 // under the License.
 
 import ballerina/test;
+import ballerinax/cdata.connect.driver as _; // Get the CData driver
 
 @test:Config {}
 function testSSLConfiguration() {
