@@ -62,12 +62,10 @@ test {
     }
 }
 
-// Configure SpotBugs using tasks.withType
 tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
     ignoreFailures = true
-    jvmArgs = ['-Xmx1024m']
     
-    // Use dynamic class loading for enum values (works with all Gradle versions)
+    // Use dynamic class loading for enum values
     def classLoader = plugins["com.github.spotbugs"].class.classLoader
     def SpotBugsEffort = classLoader.loadClass("com.github.spotbugs.snom.Effort")
     def SpotBugsConfidence = classLoader.loadClass("com.github.spotbugs.snom.Confidence")
@@ -84,7 +82,7 @@ tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
     
     reports {
         xml.required = false
-        html.required = true
+        text.required = true
     }
 }
 
@@ -94,11 +92,13 @@ spotbugsTest {
 
 task validateSpotbugs() {
     doLast {
-        def spotbugsReports = fileTree(dir: "${project.buildDir}/reports/spotbugs", include: '**/*.html')
-        spotbugsReports.each { report ->
-            if (report.exists() && report.text.contains('BugInstance')) {
-                throw new GradleException("Spotbugs rule violations were found in ${report.name}")
+        if (spotbugsMain.reports.size() > 0 &&
+                spotbugsMain.reports[0].destination.exists() &&
+                spotbugsMain.reports[0].destination.text.readLines().size() > 0) {
+            spotbugsMain.reports[0].destination?.eachLine {
+                println 'Failure: ' + it
             }
+            throw new GradleException("Spotbugs rule violations were found.");
         }
     }
 }
