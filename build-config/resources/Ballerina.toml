@@ -1,16 +1,22 @@
 [package]
 org = "ballerinax"
 name = "cdata.connect"
-version = "@toml.version@"
+version = "1.2.0"
 authors = ["Ballerina"]
 keywords = ["IT Operations/Cloud Services", "Cost/Paid"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-cdata.connect"
 icon = "icon.png"
 license = ["Apache-2.0"]
-distribution = "2201.7.0"
+distribution = "2201.12.10"
 
-[[platform.java11.dependency]]
+[build-options]
+observabilityIncluded = true
+
+[platform.java21]
+graalvmCompatible = true
+
+[[platform.java21.dependency]]
 path = "../native/build/libs/cdata-connect-native-@project.version@.jar"
 
-[[platform.java11.dependency]]
+[[platform.java21.dependency]]
 path = "./lib/sql-native-@sql.native.version@.jar"
