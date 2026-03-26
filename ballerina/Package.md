@@ -1,15 +1,15 @@
-Connects to [CData Connect](https://cloud.cdata.com/docs/JDBC.html) from Ballerina
+## Overview
 
-## Package overview
-The `ballerinax/cdata.connect` is a [Ballerina](https://ballerina.io/) connector for CData Connect. 
-It allows you to programmatically access all of the CData Connect applications, databases, APIs, services via the Java Database Connectivity (JDBC) API using [Ballerina](https://ballerina.io/).
-It provides operations to execute a wide range of standard DDL Commands, SQL Commands, and SQL Functions for querying data sources. 
-You can find reference information for all the CData Connect SQL commands (DDL, DML, and query syntax) [here](https://cloud.cdata.com/docs/SQL-Reference.html).
+[CData Connect](https://cloud.cdata.com/docs/JDBC.html) is a data integration platform that allows you to connect to a wide variety of data sources through a single interface. It provides a JDBC interface to access applications, databases, and APIs.
 
-### Compatibility
-|                                   | Version                         |
-|-----------------------------------|---------------------------------|
-| Ballerina Language                | Ballerina Swan Lake 2201.7.0    | 
+The CData Connect connector for Ballerina allows you to programmatically access all of the CData Connect applications, databases, APIs, and services via the Java Database Connectivity (JDBC) API. It provides operations to execute a wide range of standard DDL Commands, SQL Commands, and SQL Functions for querying data sources.
+
+### Key Features
+
+- Access data sources via standard JDBC
+- Execute SQL queries, DML, and DDL operations
+- Support for batch execution and stored procedures
+- Integration with various enterprise applications and databases
 
 ## Report issues
 To report bugs, request new features, start new discussions, view project boards, etc., go to the [Ballerina Extended Library repository](https://github.com/ballerina-platform/ballerina-extended-library)
