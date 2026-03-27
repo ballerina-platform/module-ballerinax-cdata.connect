@@ -10,7 +10,7 @@
 // Unless required by applicable law or agreed to in writing,
 // software distributed under the License is distributed on an
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
+// KIND, either express or implied. See the License for the
 // specific language governing permissions and limitations
 // under the License.
 
@@ -27,23 +27,58 @@ configurable string password = ?;
 cdata:Client cdataClient = check new (user, password);
 
 public function main() returns error? {
+    check getUserInformation();
+    check queryAndConvertLead();
+}
 
-    // Stored Procedures
+function getUserInformation() returns error? {
+    io:println("Call stored procedure `GetUserInformation`.");
+    sql:ParameterizedCallQuery getUserInfoQuery = `{EXEC Salesforce1.Salesforce.GetUserInformation}`;
+    sql:ProcedureCallResult userInfoCall = check cdataClient->call(getUserInfoQuery);
+    stream<record {}, sql:Error?>? userResult = userInfoCall.queryResult;
 
-    string leadId = "00Q5g00000AVrkSEAT";
-    sql:ParameterizedCallQuery sqlQuery = `{EXEC Salesforce1.Salesforce.ConvertLead LeadId# = ${leadId}, 
-                                        ConvertedStatus# = 'Closed - Converted'}`;
-    sql:ProcedureCallResult retCall = check cdataClient->call(sqlQuery);
-    io:println("Call stored procedure `ConvertLead`.");
-
-    stream<record {}, sql:Error?>? result = retCall.queryResult;
-    if result is stream<record {}, sql:Error?> {
-        stream<record {}, sql:Error?> informationStream = <stream<record {}, sql:Error?>>result;
-        check from record {} information in informationStream
-            do {
-                io:println("Converted Lead details: ", information);
-            };
+    if userResult is stream<record {}, sql:Error?> {
+        check from record {} info in userResult do {
+            io:println("User details: ", info);
+        };
     }
+    check userInfoCall.close();
+}
 
-    check retCall.close();
+function queryAndConvertLead() returns error? {
+    io:println("\n=== Querying for available leads ===");
+
+    // Query for leads that can be converted - using proper catalog.schema.table format
+    sql:ParameterizedQuery leadQuery = `SELECT Id, FirstName, LastName, Company, Status, IsConverted FROM Salesforce1.Salesforce.Lead WHERE IsConverted = false LIMIT 5`;
+    stream<record {}, sql:Error?> leadStream = cdataClient->query(leadQuery);
+
+    string? availableLeadId = ();
+    check from record {} lead in leadStream do {
+        io:println("Available Lead: ", lead);
+        if availableLeadId is () && lead["Id"] is string {
+            availableLeadId = <string>lead["Id"];
+        }
+    };
+    check leadStream.close();
+
+    if availableLeadId is string {
+        check convertLead(availableLeadId);
+    } else {
+        io:println("No convertible leads found in the system.");
+    }
+}
+
+function convertLead(string leadId) returns error? {
+    io:println("\n=== Converting Lead: ", leadId, " ===");
+    string convertedStatus = "Closed - Converted";
+
+    // Use the working method - query instead of call for stored procedure execution
+    sql:ParameterizedQuery convertLeadQuery = `EXEC Salesforce1.Salesforce.ConvertLead leadId = ${leadId}, convertedStatus = ${convertedStatus}`;
+    stream<record {}, sql:Error?> result = cdataClient->query(convertLeadQuery);
+    io:println("Call stored procedure `ConvertLead` executed successfully.");
+
+    check from record {} information in result do {
+        io:println("Converted Lead details: ", information);
+    };
+    check result.close();
 }

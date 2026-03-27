@@ -12,11 +12,11 @@ jobs:
       - uses: actions/checkout@v3
 
       # Set up Java Environment
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 17.0.7
+          java-version: 21.0.3
 
       # Setup Ballerina Environment
       - name: Set Up Ballerina
