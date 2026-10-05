@@ -1,8 +1,13 @@
 ## Overview
-The [Ballerina](https://ballerina.io/) connector for [CData Connect](https://cloud.cdata.com/docs/JDBC.html) allows you to programmatically access all of the CData Connect applications, databases, APIs, and services across an organization via the Java Database Connectivity (JDBC) API using [Ballerina](https://ballerina.io/). 
-For detailed information on working with each data source, see [Data Sources](https://cloud.cdata.com/docs/Data-Sources.html).
-CData Connect supports a wide range of standard DDL commands, SQL commands, and SQL functions to query data sources. 
-For reference information on all the CData Connect SQL commands (i.e., DDL, DML, and query syntax), see the [SQL Reference](https://cloud.cdata.com/docs/SQL-Reference.html).
+
+The CData Connect connector allows you to programmatically access all of the CData Connect applications, databases, APIs, and services across an organization via the Java Database Connectivity (JDBC) API. CData Connect supports a wide range of standard DDL commands, SQL commands, and SQL functions to query data sources.
+
+### Key Features
+
+- Programmatically access applications, databases, and APIs via JDBC
+- Support for standard DDL and SQL commands
+- Integration with various data sources like Salesforce, etc.
+- Support for stored procedures and batch operations
 
 ## Prerequisites
 
