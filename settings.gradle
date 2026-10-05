@@ -8,7 +8,7 @@
  */
 
 plugins {
-    id "com.gradle.enterprise" version "3.13.2"
+    id "com.gradle.develocity" version "3.19.2"
 }
 
 def projectName = 'cdata-connect'
@@ -24,9 +24,9 @@ project(":${projectName}-native").projectDir = file('native')
 project(":${projectName}-ballerina").projectDir = file('ballerina')
 project(":${projectName}-examples").projectDir = file('examples')
 
-gradleEnterprise {
+develocity {
     buildScan {
-        termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-        termsOfServiceAgree = 'yes'
+        termsOfUseUrl = 'https://gradle.com/help/legal-terms-of-use'
+        termsOfUseAgree = 'yes'
     }
 }
